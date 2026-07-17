@@ -27,7 +27,7 @@ Because there is only one proposal, adapt your output as follows:
   - `best_value_agency`: Set to the agency name.
   - `price_range`: Set to the single total cost formatted as currency.
   - `value_reasoning`: Analyze if the pricing offers good value based on the scope.
-  - `pricing_breakdown`: Map the agency name to its total cost.
+  - `pricing_breakdown`: Map the agency name to its total cost (MUST be a numeric float only, e.g. 17000, no currency symbols or commas).
 - `overall_summary`: Provide an executive summary of the proposal's quality.
 - `head_to_head`: Repurpose this to list 2-3 "Overall Proposal Highlights".
 

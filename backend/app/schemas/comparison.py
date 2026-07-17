@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class DimensionScore(BaseModel):
@@ -37,6 +37,27 @@ class PricingComparison(BaseModel):
         default_factory=dict,
         description="Agency name → total cost",
     )
+
+    @field_validator("pricing_breakdown", mode="before")
+    @classmethod
+    def parse_pricing_breakdown(cls, v: dict) -> dict[str, float]:
+        import re
+        if not isinstance(v, dict):
+            return v
+        cleaned = {}
+        for key, val in v.items():
+            if isinstance(val, (int, float)):
+                cleaned[key] = float(val)
+            elif isinstance(val, str):
+                # Remove everything except digits and decimal point
+                val_clean = re.sub(r'[^\d.]', '', val)
+                try:
+                    cleaned[key] = float(val_clean) if val_clean else 0.0
+                except ValueError:
+                    cleaned[key] = 0.0
+            else:
+                cleaned[key] = 0.0
+        return cleaned
 
 
 class ComparisonResult(BaseModel):

@@ -57,7 +57,7 @@ COMPARISON_USER_PROMPT = """Compare the following marketing agency proposals acr
   - key_differences (array of strings): notable differences
 - pricing_comparison: object with:
   - lowest_cost_agency, highest_cost_agency, price_range, best_value_agency, value_reasoning
-  - pricing_breakdown: {{ agency_name: total_cost }}
+  - pricing_breakdown: {{ agency_name: total_cost_as_numeric_float_only_no_symbols }}
 - overall_summary (string): executive summary of the comparison
 - head_to_head (array of strings): key head-to-head insights
 """
