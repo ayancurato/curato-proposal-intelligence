@@ -162,6 +162,8 @@ export interface Risk {
   explanation: string;
   suggested_action: string;
   affected_section: string;
+  business_impact: string;
+  why_it_matters: string;
 }
 
 export interface ProposalRiskAnalysis {
@@ -211,6 +213,9 @@ export interface Recommendation {
   choose_agency_a_if: string | null;
   choose_agency_b_if: string | null;
   executive_summary: string;
+  proposal_readiness: string;
+  things_to_clarify: string[];
+  negotiation_suggestions: string[];
 }
 
 export interface QuickStats {
@@ -223,6 +228,7 @@ export interface QuickStats {
   high_risks: number;
   recommended_agency: string | null;
   confidence_level: string | null;
+  health_score: number | null;
 }
 
 export interface DashboardResponse {

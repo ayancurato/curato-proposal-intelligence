@@ -3,7 +3,7 @@
  */
 
 import { useMutation } from '@tanstack/react-query';
-import { uploadProposals, startAnalysis, type UploadResponse } from '../services/api';
+import { uploadProposals, startAnalysis } from '../services/api';
 
 export function useUpload() {
   const uploadMutation = useMutation({

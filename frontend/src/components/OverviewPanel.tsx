@@ -4,8 +4,6 @@ import {
   DollarSign,
   Shield,
   Award,
-  Clock,
-  AlertTriangle,
   TrendingUp,
 } from 'lucide-react';
 import type { DashboardResponse } from '../services/api';

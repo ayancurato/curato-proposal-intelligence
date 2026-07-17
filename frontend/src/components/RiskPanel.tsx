@@ -60,7 +60,6 @@ export default function RiskPanel({ dashboard }: Props) {
         (SEVERITY_ORDER[b.severity as keyof typeof SEVERITY_ORDER] ?? 4)
     );
 
-  const agencyNames = [...new Set(riskAnalysis.analyses.map((a) => a.agency_name))];
 
   return (
     <div>

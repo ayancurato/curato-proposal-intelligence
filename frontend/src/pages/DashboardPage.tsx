@@ -6,7 +6,6 @@ import {
   GitCompareArrows,
   ShieldAlert,
   Award,
-  Loader2,
   AlertCircle,
 } from 'lucide-react';
 import { useAnalysis } from '../hooks/useAnalysis';
@@ -26,7 +25,7 @@ type TabKey = (typeof TABS)[number]['key'];
 
 export default function DashboardPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
-  const { dashboard, status, statusMessage, isComplete, isFailed, isProcessing } =
+  const { dashboard, status, statusMessage, isComplete, isFailed } =
     useAnalysis(sessionId);
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
 
