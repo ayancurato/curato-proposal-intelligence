@@ -7,7 +7,7 @@ import json
 import time
 from typing import Type, TypeVar, Optional, Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 import groq
 
 from app.config import Settings
@@ -44,6 +44,8 @@ class AIClient:
                     content = self._call_groq(system_prompt, user_prompt)
                 else:
                     raise ValueError(f"Unsupported AI provider: {self.provider}")
+                
+                print(f"Raw LLM response (attempt {attempt + 1}):\n{content}\n---")
                 
                 # Parse and validate the JSON response
                 parsed = self._parse_and_validate(content, response_model)
@@ -92,26 +94,34 @@ class AIClient:
 
     def _parse_and_validate(self, content: str, response_model: Type[T]) -> Optional[T]:
         """Parse JSON and validate against the Pydantic model."""
+        def parse_json_str(json_str: str) -> Optional[T]:
+            try:
+                data = json.loads(json_str)
+                return response_model.model_validate(data)
+            except ValidationError as e:
+                print(f"Pydantic Validation Error:\n{e}")
+                raise e # We raise so that the outer retry loop catches it and propagates the detailed error
+
         try:
             # Try direct JSON parse
-            data = json.loads(content)
-            return response_model.model_validate(data)
-        except (json.JSONDecodeError, Exception) as e:
-            # Print the error for debugging
-            print(f"Failed to validate JSON: {e}")
+            return parse_json_str(content)
+        except json.JSONDecodeError as e:
+            print(f"Direct JSON parse failed: {e}")
+        except ValidationError:
+            raise # Propagate validation error directly
             
         # Try extracting JSON from markdown code blocks if the model ignored response_format
         try:
             if "```json" in content:
                 json_str = content.split("```json")[1].split("```")[0].strip()
-                data = json.loads(json_str)
-                return response_model.model_validate(data)
+                return parse_json_str(json_str)
             elif "```" in content:
                 json_str = content.split("```")[1].split("```")[0].strip()
-                data = json.loads(json_str)
-                return response_model.model_validate(data)
-        except (json.JSONDecodeError, IndexError, Exception):
+                return parse_json_str(json_str)
+        except (json.JSONDecodeError, IndexError):
             pass
+        except ValidationError:
+            raise
 
         # Try finding JSON object in the text
         try:
@@ -119,9 +129,10 @@ class AIClient:
             end = content.rfind("}") + 1
             if start >= 0 and end > start:
                 json_str = content[start:end]
-                data = json.loads(json_str)
-                return response_model.model_validate(data)
-        except (json.JSONDecodeError, Exception):
+                return parse_json_str(json_str)
+        except json.JSONDecodeError:
             pass
+        except ValidationError:
+            raise
 
         return None

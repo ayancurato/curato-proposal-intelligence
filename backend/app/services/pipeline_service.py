@@ -100,6 +100,7 @@ class PipelineService:
                 await db.commit()
 
                 print(f"  ✓ Extracted {len(text)} chars from {proposal.original_name}")
+                print(f"  ▸ First 500 chars: {text[:500]!r}")
 
             except Exception as e:
                 proposal.status = ProposalStatus.FAILED
@@ -144,7 +145,9 @@ class PipelineService:
                 print(f"  ✖ AI extraction failed: {proposal.original_name}: {e}")
 
         if len(extracted_proposals) < 1:
-            raise ValueError("No proposals could be AI-extracted.")
+            failed_msgs = [f"'{p.original_name}': {p.error_message}" for p in valid_proposals if p.status == ProposalStatus.FAILED]
+            error_details = " | ".join(failed_msgs) if failed_msgs else "Unknown error"
+            raise ValueError(f"Analysis Failed - No proposals could be AI-extracted. Details: {error_details}")
 
         # ── Step 3: Comparison or Review ──────────────────────────
         comparison_result = None
