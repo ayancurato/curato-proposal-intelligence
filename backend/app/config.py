@@ -36,6 +36,15 @@ class Settings(BaseSettings):
     max_file_size_mb: int = 25
     max_proposals_per_session: int = 5
 
+    # ── Leads & Integrations ──────────────────────────────────────────
+    turnstile_secret_key: str = ""
+    google_sheets_credentials_json: str = ""
+    google_sheets_spreadsheet_id: str = ""
+    google_sheets_worksheet_name: str = ""
+    valid_tools: str = "proposal-intelligence"
+    session_cookie_name: str = "curato_session"
+    session_expiry_days: int = 30
+
     # ── Server ────────────────────────────────────────────────────────
     allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
@@ -55,6 +64,11 @@ class Settings(BaseSettings):
         path = Path(self.upload_dir)
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    @property
+    def valid_tools_list(self) -> list[str]:
+        """List of valid tool identifiers."""
+        return [t.strip() for t in self.valid_tools.split(",") if t.strip()]
 
 
 @lru_cache

@@ -68,8 +68,9 @@ async def health_check():
 
 
 # ── Include Routers ──────────────────────────────────────────────────
-from app.api import upload, analysis, proposals
+from app.api import upload, analysis, proposals, leads
 
 app.include_router(upload.router)
 app.include_router(analysis.router)
 app.include_router(proposals.router)
+app.include_router(leads.router)
