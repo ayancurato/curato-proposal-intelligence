@@ -13,7 +13,7 @@ Your task is to extract structured information from a marketing agency proposal 
 1. Extract ONLY information that is explicitly stated in the proposal.
 2. If information is not mentioned, use null for optional fields or empty arrays for list fields.
 3. Never fabricate, assume, or infer information that is not in the document.
-4. For pricing, convert all amounts to numeric values in USD when possible.
+4. For pricing, convert all amounts to numeric values in USD when possible. ONLY output fully evaluated numbers (e.g. 97.20). NEVER output mathematical expressions (e.g. 1.299 * 74.83).
 5. If pricing is given in a range, use the higher end for total_cost and note the range.
 6. Preserve the exact wording for terms, clauses, and commitments.
 7. Extract ALL deliverables mentioned, even if they seem minor.
