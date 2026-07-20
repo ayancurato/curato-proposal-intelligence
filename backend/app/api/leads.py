@@ -64,7 +64,7 @@ async def capture_lead(
         response.status_code = 400
         return ErrorResponse(success=False, message=str(e))
     except Exception as e:
-        print(f"✖ Unexpected error in lead capture: {e}")
+        print(f"[ERROR] Unexpected error in lead capture: {e}")
         response.status_code = 500
         return ErrorResponse(success=False, message="An unexpected error occurred.")
 

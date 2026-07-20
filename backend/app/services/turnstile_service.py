@@ -30,7 +30,7 @@ class TurnstileService:
         """
         if not self.settings.turnstile_secret_key:
             # If no secret key is configured, bypass verification (useful for local dev)
-            print("⚠ Turnstile secret key not configured, bypassing verification.")
+            print("[WARN] Turnstile secret key not configured, bypassing verification.")
             return True
 
         payload = {
@@ -50,9 +50,9 @@ class TurnstileService:
                 if data.get("success"):
                     return True
                 
-                print(f"✖ Turnstile verification failed: {data.get('error-codes', [])}")
+                print(f"[ERROR] Turnstile verification failed: {data.get('error-codes', [])}")
                 return False
                 
             except Exception as e:
-                print(f"✖ Turnstile service error: {e}")
+                print(f"[ERROR] Turnstile service error: {e}")
                 return False

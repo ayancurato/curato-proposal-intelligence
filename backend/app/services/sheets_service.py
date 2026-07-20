@@ -31,7 +31,7 @@ class GoogleSheetsService:
     def _get_client(self) -> gspread.Client | None:
         """Authenticate and return the gspread client."""
         if not self.settings.google_sheets_credentials_json or not self.settings.google_sheets_spreadsheet_id:
-            print("⚠ Google Sheets credentials or spreadsheet ID not configured. Bypassing sheets append.")
+            print("[WARN] Google Sheets credentials or spreadsheet ID not configured. Bypassing sheets append.")
             return None
 
         try:
@@ -41,7 +41,7 @@ class GoogleSheetsService:
             )
             return gspread.authorize(credentials)
         except Exception as e:
-            print(f"✖ Failed to authenticate with Google Sheets: {e}")
+            print(f"[ERROR] Failed to authenticate with Google Sheets: {e}")
             return None
 
     def _append_sync(self, lead: LeadCreate, timestamp: str) -> None:
@@ -70,10 +70,10 @@ class GoogleSheetsService:
             ]
             
             worksheet.append_row(row, value_input_option="USER_ENTERED")
-            print(f"  ✓ Appended lead {lead.work_email} to Google Sheets")
+            print(f"  [OK] Appended lead {lead.work_email} to Google Sheets")
             
         except Exception as e:
-            print(f"✖ Failed to append to Google Sheets: {e}")
+            print(f"[ERROR] Failed to append to Google Sheets: {e}")
 
     async def append_lead(self, lead: LeadCreate) -> None:
         """
