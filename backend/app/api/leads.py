@@ -7,7 +7,7 @@ Handles lead capture, validation, and session management.
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, BackgroundTasks, Request, Response, Cookie
+from fastapi import APIRouter, Depends, BackgroundTasks, Request, Response, Cookie, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
 
@@ -61,12 +61,16 @@ async def capture_lead(
         )
     except ValueError as e:
         # Expected business logic errors (e.g., Turnstile failure)
-        response.status_code = 400
-        return ErrorResponse(success=False, message=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"success": False, "message": str(e)}
+        )
     except Exception as e:
         print(f"[ERROR] Unexpected error in lead capture: {e}")
-        response.status_code = 500
-        return ErrorResponse(success=False, message="An unexpected error occurred.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"success": False, "message": f"An unexpected error occurred: {str(e)}"}
+        )
 
     # Calculate 30-day expiry for cookie
     expiry = datetime.now(timezone.utc) + timedelta(days=settings.session_expiry_days)
