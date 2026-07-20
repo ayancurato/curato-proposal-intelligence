@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -78,7 +78,7 @@ class Timeline(BaseModel):
     """Project timeline with milestones."""
     start_date: Optional[str] = Field(None, description="Project start date")
     end_date: Optional[str] = Field(None, description="Project end date")
-    duration: Optional[str] = Field(None, description="Total duration (e.g., '3 months')")
+    duration: Optional[Any] = Field(None, description="Total duration (e.g., '3 months')")
     milestones: list[Milestone] = Field(default_factory=list, description="Project milestones")
 
     @field_validator("milestones", mode="before")
@@ -91,7 +91,7 @@ class TeamMember(BaseModel):
     """A member of the proposed team."""
     name: Optional[str] = Field(None, description="Team member name")
     role: str = Field(..., description="Role on the project")
-    experience: Optional[str] = Field(None, description="Relevant experience")
+    experience: Optional[Any] = Field(None, description="Relevant experience")
 
 
 class Team(BaseModel):
@@ -109,14 +109,14 @@ class Team(BaseModel):
 class KPI(BaseModel):
     """Key Performance Indicator proposed by the agency."""
     metric: str = Field(..., description="KPI metric name")
-    target: Optional[str] = Field(None, description="Target value or range")
+    target: Optional[Any] = Field(None, description="Target value or range")
     measurement_method: Optional[str] = Field(None, description="How this KPI will be measured")
 
 
 class Reporting(BaseModel):
     """Reporting structure proposed by the agency."""
-    frequency: Optional[str] = Field(None, description="Reporting frequency (weekly, monthly, etc.)")
-    format: Optional[str] = Field(None, description="Report format")
+    frequency: Optional[Any] = Field(None, description="Reporting frequency (weekly, monthly, etc.)")
+    format: Optional[Any] = Field(None, description="Report format")
     metrics_included: list[str] = Field(default_factory=list, description="Metrics included in reports")
     tools: list[str] = Field(default_factory=list, description="Tools used for reporting")
 
