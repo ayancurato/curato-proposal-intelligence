@@ -28,7 +28,7 @@ export default function MainLayout() {
           <img
             src="/curato-logo-full.jpg"
             alt="Curato Logo"
-            style={{ height: '32px', width: 'auto', objectFit: 'contain', marginRight: '16px', mixBlendMode: 'multiply' }}
+            style={{ height: '64px', width: 'auto', objectFit: 'contain', marginRight: '8px', mixBlendMode: 'multiply' }}
           />
           <div style={{ height: '20px', width: '1px', background: '#cbd5e1', marginRight: '16px' }} />
           <span style={{
