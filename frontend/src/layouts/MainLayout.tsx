@@ -15,9 +15,9 @@ export default function MainLayout() {
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          background: 'rgba(244, 247, 252, 0.8)',
+          background: 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(16px)',
-          borderBottom: '1px solid var(--glass-border)',
+          borderBottom: '1px solid rgba(0,0,0,0.05)',
           padding: '16px 32px',
           display: 'flex',
           alignItems: 'center',
@@ -28,24 +28,35 @@ export default function MainLayout() {
           <img
             src="/curato-logo-full.jpg"
             alt="Curato Logo"
-            style={{ height: '76px', width: 'auto', objectFit: 'contain', marginRight: '-16px', mixBlendMode: 'multiply' }}
+            style={{ height: '32px', width: 'auto', objectFit: 'contain', marginRight: '16px', mixBlendMode: 'multiply' }}
           />
-          <div style={{ height: '24px', width: '2px', background: 'var(--glass-border)', marginRight: '12px', position: 'relative', zIndex: 1 }} />
+          <div style={{ height: '20px', width: '1px', background: '#cbd5e1', marginRight: '16px' }} />
           <span style={{
-            fontSize: '1.15rem',
-            fontWeight: 600,
-            color: 'var(--text-secondary)',
-            letterSpacing: '0.01em',
+            fontSize: '1rem',
+            fontWeight: 500,
+            color: '#475569',
+            fontFamily: 'Inter, sans-serif'
           }}>
             Proposal Intelligence
           </span>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="badge badge-info">
-            <Sparkles size={12} />
-            AI-Powered
-          </span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 14px',
+            background: 'rgba(15, 181, 168, 0.1)',
+            color: '#0fb5a8',
+            borderRadius: '9999px',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            letterSpacing: '0.05em'
+          }}>
+            <Sparkles size={14} />
+            AI-POWERED
+          </div>
         </div>
       </header>
 
