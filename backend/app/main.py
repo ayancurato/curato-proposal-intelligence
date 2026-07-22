@@ -18,8 +18,10 @@ if sys.platform == "win32":
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.database import create_tables
@@ -54,6 +56,71 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# ── Exception Handlers ────────────────────────────────────────────────
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    if not errors:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"success": False, "code": "VALIDATION_ERROR", "message": "Invalid request."},
+        )
+    
+    first_error = errors[0]
+    loc = first_error.get("loc", [])
+    msg = first_error.get("msg", "")
+    
+    code = "VALIDATION_ERROR"
+    user_msg = "Please check your inputs and try again."
+    
+    # Handle custom error format raised in validators
+    if "Value error, " in msg:
+        msg = msg.replace("Value error, ", "")
+        
+    if "|" in msg:
+        parts = msg.split("|", 1)
+        code = parts[0]
+        user_msg = parts[1]
+    else:
+        # Fallback specific checks
+        if loc and loc[-1] == "company_website":
+            code = "INVALID_WEBSITE"
+            user_msg = "Please enter a valid company website."
+        elif loc and loc[-1] == "work_email":
+            code = "PERSONAL_EMAIL_NOT_ALLOWED"
+            user_msg = "Please enter a valid business email address to continue."
+        else:
+            user_msg = msg # Use Pydantic's default message or fallback
+
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"success": False, "code": code, "message": user_msg},
+    )
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    # If detail is already our custom dictionary format, return it as JSON
+    if isinstance(exc.detail, dict) and "success" in exc.detail:
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+        
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"success": False, "code": "ERROR", "message": str(exc.detail)},
+    )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print(f"[ERROR] Unhandled exception: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "success": False,
+            "code": "SERVER_ERROR",
+            "message": "Something went wrong. Please try again later."
+        },
+    )
 
 
 # ── Health Check ──────────────────────────────────────────────────────

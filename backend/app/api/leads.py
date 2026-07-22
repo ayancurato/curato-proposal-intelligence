@@ -61,15 +61,22 @@ async def capture_lead(
         )
     except ValueError as e:
         # Expected business logic errors (e.g., Turnstile failure)
+        error_msg = str(e)
+        code = "VALIDATION_ERROR"
+        if "|" in error_msg:
+            parts = error_msg.split("|", 1)
+            code = parts[0]
+            error_msg = parts[1]
+            
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"success": False, "message": str(e)}
+            detail={"success": False, "code": code, "message": error_msg}
         )
     except Exception as e:
         print(f"[ERROR] Unexpected error in lead capture: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"success": False, "message": f"An unexpected error occurred: {str(e)}"}
+            detail={"success": False, "code": "SERVER_ERROR", "message": "Something went wrong. Please try again later."}
         )
 
     # Calculate 30-day expiry for cookie
