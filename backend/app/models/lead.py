@@ -21,6 +21,7 @@ class Lead(Base):
     full_name = Column(String, nullable=False)
     company_name = Column(String, nullable=False)
     company_website = Column(String, nullable=False)
+    designation = Column(String, nullable=False, server_default="Unknown")
     work_email = Column(String, unique=True, index=True, nullable=False)
     phone_number = Column(String, nullable=False)
     

@@ -5,7 +5,7 @@ Pydantic schemas for the Lead Capture API.
 """
 
 import re
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, Field, field_validator, HttpUrl
 import socket
@@ -29,10 +29,18 @@ class LeadCreate(BaseModel):
     full_name: str = Field(..., min_length=2)
     company_name: str = Field(..., min_length=2)
     company_website: HttpUrl
+    designation: str = Field(..., min_length=2, max_length=100)
     work_email: str
     phone_number: str
     captcha_token: str = Field(..., min_length=10)
     tool: str
+
+    @field_validator("designation", mode="before")
+    @classmethod
+    def validate_designation(cls, v: Any) -> Any:
+        if not isinstance(v, str) or len(v.strip()) < 2 or len(v.strip()) > 100:
+            raise ValueError("INVALID_DESIGNATION|Please enter your designation.")
+        return v.strip()
     
     @field_validator("work_email")
     @classmethod

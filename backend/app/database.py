@@ -58,5 +58,10 @@ async def get_db() -> AsyncSession:
 # ── Table Creation ────────────────────────────────────────────────────
 async def create_tables():
     """Create all database tables. Called during app startup."""
+    from sqlalchemy import text
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        try:
+            await conn.execute(text("ALTER TABLE leads ADD COLUMN IF NOT EXISTS designation VARCHAR NOT NULL DEFAULT 'Unknown'"))
+        except Exception:
+            pass

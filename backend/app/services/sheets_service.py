@@ -58,7 +58,7 @@ class GoogleSheetsService:
             else:
                 worksheet = spreadsheet.sheet1
 
-            # Columns: Timestamp | Full Name | Company Name | Company Website | Work Email | Phone Number | AI Tool
+            # Columns: Timestamp | Full Name | Company Name | Company Website | Work Email | Phone Number | Designation | AI Tool
             row = [
                 timestamp,
                 lead.full_name,
@@ -66,6 +66,7 @@ class GoogleSheetsService:
                 str(lead.company_website),
                 lead.work_email,
                 lead.phone_number,
+                lead.designation,
                 lead.tool
             ]
             
