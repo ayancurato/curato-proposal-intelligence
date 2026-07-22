@@ -64,6 +64,7 @@ class LeadService:
             lead.company_name = lead_data.company_name
             lead.company_website = str(lead_data.company_website)
             lead.phone_number = lead_data.phone_number
+            lead.designation = lead_data.designation
             lead.tool_used = lead_data.tool
             lead.session_token = session_token
             lead.ip_address = ip_address
@@ -78,6 +79,7 @@ class LeadService:
                 company_website=str(lead_data.company_website),
                 work_email=lead_data.work_email,
                 phone_number=lead_data.phone_number,
+                designation=lead_data.designation,
                 tool_used=lead_data.tool,
                 session_token=session_token,
                 ip_address=ip_address,
