@@ -86,25 +86,46 @@ class LeadCreate(BaseModel):
     def validate_website(cls, v: HttpUrl) -> HttpUrl:
         url_str = str(v)
         domain = v.host
+        print(f"[Website Validation] Normalized URL: {url_str}, Domain: {domain}")
         if not domain:
             raise ValueError("INVALID_WEBSITE|Please enter a valid company website.")
             
         try:
-            socket.gethostbyname(domain)
-        except socket.gaierror:
+            ip = socket.gethostbyname(domain)
+            print(f"[Website Validation] DNS lookup successful: {domain} -> {ip}")
+        except socket.gaierror as e:
+            print(f"[Website Validation] DNS lookup failed for {domain}: {e}")
             raise ValueError("INVALID_WEBSITE|Please enter a valid company website.")
             
         try:
-            req = urllib.request.Request(url_str, method="HEAD", headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=3) as response:
-                pass
+            req = urllib.request.Request(url_str, method="HEAD", headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                print(f"[Website Validation] HEAD validation successful: {response.status} for {url_str}")
+                return v
         except urllib.error.HTTPError as e:
+            if e.code in [200, 301, 302, 303, 307, 308, 401, 403, 405]:
+                print(f"[Website Validation] HEAD validation successful with code {e.code} for {url_str}")
+                return v
+            elif e.code not in [403, 405, 501, 503]: 
+                # If it's 404 or something else definitive, reject immediately.
+                print(f"[Website Validation] HEAD validation returned hard error {e.code} for {url_str}")
+                raise ValueError("INVALID_WEBSITE|Please enter a valid company website.")
+            # Otherwise (like 403 or 405), fallback to GET
+        except Exception as e:
+            print(f"[Website Validation] HEAD validation raised {e} for {url_str}, falling back to GET")
+            
+        # Fallback to GET
+        try:
+            req = urllib.request.Request(url_str, method="GET", headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                print(f"[Website Validation] GET validation successful: {response.status} for {url_str}")
+                return v
+        except urllib.error.HTTPError as e:
+            print(f"[Website Validation] GET validation returned error code {e.code} for {url_str}")
             if e.code not in [200, 301, 302, 303, 307, 308, 401, 403, 405]:
-                # Other HTTP errors might indicate the site is broken, but the domain exists. 
-                # We'll allow it to pass since DNS resolved, but if you want strict checking, 
-                # you can raise the ValueError here.
-                pass
-        except Exception:
+                raise ValueError("INVALID_WEBSITE|Please enter a valid company website.")
+        except Exception as e:
+            print(f"[Website Validation] GET validation failed with exception: {e}")
             raise ValueError("INVALID_WEBSITE|Please enter a valid company website.")
             
         return v
